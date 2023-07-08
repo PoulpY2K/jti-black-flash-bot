@@ -21,7 +21,8 @@
     "discord.js": "^14.11.0",
     "discordx": "^11.7.6",
     "prisma": "^4.16.1",
-    "tslog": "^4.8.2"
+    "tslog": "^4.8.2",
+    "youtube-sr": "^4.3.4"
   },
   "devDependencies": {
     "@types/node": "^20.3.2",
@@ -32,7 +33,6 @@
     "prettier": "^2.8.8",
     "tsx": "^3.12.7",
     "typescript": "5.1.5",
-    "youtube-sr": "^4.3.4",
     "yt-search": "^2.10.4"
   },
   "engines": {

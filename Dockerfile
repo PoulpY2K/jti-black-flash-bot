@@ -1,5 +1,9 @@
 ## build runner
-FROM --platform=linux/amd64 node:20-alpine as build-runner
+FROM node:20-alpine as build-runner
+
+RUN apk add --update  \
+    build-base \
+    python3
 
 # Set temp directory
 WORKDIR /tmp/app
@@ -17,7 +21,11 @@ RUN npm install
 RUN npm run build
 
 ## production runner
-FROM --platform=linux/amd64 node:20-alpine as prod-runner
+FROM node:20-alpine as prod-runner
+
+RUN apk add --update  \
+    build-base \
+    python3
 
 # Set work directory
 WORKDIR /app

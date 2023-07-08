@@ -17,7 +17,7 @@ import {
 } from "discordx";
 import {QueueNode, RepeatMode} from "@discordx/music";
 import {bot} from "../main.js";
-import {formatDurationFromMS, Queue} from "../music/queue";
+import {formatDurationFromMS, Queue} from "../music/queue.js";
 
 @Discord()
 export class player {
