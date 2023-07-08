@@ -50,14 +50,14 @@ export class Queue extends TrackQueue<MyTrack> {
 
     private controlsRow(): ActionRowBuilder<MessageActionRowComponentBuilder>[] {
         const nextButton = new ButtonBuilder()
-            .setLabel("Next")
+            .setLabel("Suivant")
             .setEmoji("⏭")
             .setStyle(ButtonStyle.Primary)
             .setDisabled(!this.isPlaying)
             .setCustomId("btn-next");
 
         const pauseButton = new ButtonBuilder()
-            .setLabel(this.isPlaying ? "Pause" : "Resume")
+            .setLabel(this.isPlaying ? "Pause" : "Reprendre")
             .setEmoji(this.isPlaying ? "⏸️" : "▶️")
             .setStyle(ButtonStyle.Primary)
             .setCustomId("btn-pause");
@@ -68,7 +68,7 @@ export class Queue extends TrackQueue<MyTrack> {
             .setCustomId("btn-leave");
 
         const repeatButton = new ButtonBuilder()
-            .setLabel("Repeat")
+            .setLabel("Répéter")
             .setEmoji("🔂")
             .setDisabled(!this.isPlaying)
             .setStyle(
@@ -79,7 +79,7 @@ export class Queue extends TrackQueue<MyTrack> {
             .setCustomId("btn-repeat");
 
         const loopButton = new ButtonBuilder()
-            .setLabel("Loop")
+            .setLabel("Répétition de la file d'attente")
             .setEmoji("🔁")
             .setDisabled(!this.isPlaying)
             .setStyle(
@@ -99,20 +99,20 @@ export class Queue extends TrackQueue<MyTrack> {
             );
 
         const queueButton = new ButtonBuilder()
-            .setLabel("Queue")
+            .setLabel("File d'attente")
             .setEmoji("🎵")
             .setStyle(ButtonStyle.Primary)
             .setCustomId("btn-queue");
 
         const mixButton = new ButtonBuilder()
-            .setLabel("Shuffle")
+            .setLabel("Aléatoire")
             .setEmoji("🎛️")
             .setDisabled(!this.isPlaying)
             .setStyle(ButtonStyle.Primary)
             .setCustomId("btn-mix");
 
         const controlsButton = new ButtonBuilder()
-            .setLabel("Controls")
+            .setLabel("Contrôles")
             .setEmoji("🔄")
             .setStyle(ButtonStyle.Primary)
             .setCustomId("btn-controls");
@@ -144,7 +144,7 @@ export class Queue extends TrackQueue<MyTrack> {
 
         this.lockUpdate = true;
         const embed = new EmbedBuilder();
-        embed.setTitle("Music Controls");
+        embed.setTitle("Contrôles de la musique");
         const currentTrack = this.currentTrack;
         const nextTrack = this.nextTrack;
 
@@ -159,11 +159,11 @@ export class Queue extends TrackQueue<MyTrack> {
 
         const user = currentTrack.user;
         embed.addFields({
-            name: `Now Playing${
-                this.queueSize > 2 ? `(Total: ${this.queueSize} tracks queued)` : ""
+            name: `Lecture en cours${
+                this.queueSize > 2 ? `(Total: ${this.queueSize} pistes en file d'attente)` : ""
             }`,
-            value: `[${currentTrack.title}](${currentTrack.url ?? "NaN"})${
-                user ? ` by ${user}` : ""
+            value: `[${currentTrack.title}](${currentTrack.url ?? "Aucune"})${
+                user ? ` par ${user}` : ""
             }`,
         });
 
@@ -195,10 +195,10 @@ export class Queue extends TrackQueue<MyTrack> {
         }
 
         embed.addFields({
-            name: "Next Song",
+            name: "Prochaine piste",
             value: nextTrack
                 ? `[${nextTrack.title}](${nextTrack.url})`
-                : "No upcoming song",
+                : "Aucune piste suivante",
         });
 
         const pMsg = {
@@ -252,7 +252,7 @@ export class Queue extends TrackQueue<MyTrack> {
         const currentTrack = this.currentTrack;
         if (!currentTrack) {
             const pMsg = await interaction.followUp({
-                content: "> could not process queue atm, try later!",
+                content: "> Impossible de traiter la file d'attente, réessayez plus tard!",
                 ephemeral: true,
             });
             setTimeout(() => this.deleteMessage(pMsg), 3000);
@@ -261,7 +261,7 @@ export class Queue extends TrackQueue<MyTrack> {
 
         if (!this.queueSize) {
             const pMsg = await interaction.followUp({
-                content: `> Playing **${currentTrack.title}**`,
+                content: `> Lecture de **${currentTrack.title}**`,
                 embeds: currentTrack.thumbnail
                     ? [{image: {url: currentTrack.thumbnail}}]
                     : [],
@@ -271,7 +271,7 @@ export class Queue extends TrackQueue<MyTrack> {
             return;
         }
 
-        const current = `> Playing **${currentTrack.title}** out of ${
+        const current = `> Lecture de **${currentTrack.title}** sur ${
             this.queueSize + 1
         }`;
 

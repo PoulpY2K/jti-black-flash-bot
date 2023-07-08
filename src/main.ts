@@ -4,7 +4,8 @@ import {
     ApplicationCommandType,
     ChatInputCommandInteraction,
     ContextMenuCommandInteraction,
-    IntentsBitField
+    IntentsBitField,
+    ActivityType
 } from "discord.js";
 import {Client} from "discordx";
 import {PrismaClient} from '@prisma/client'
@@ -50,6 +51,13 @@ bot.once("ready", async () => {
     // await bot.clearApplicationCommands(
     //    ...bot.guilds.cache.map((g) => g.id)
     // );
+
+    if (bot.user) {
+        bot.user.setActivity({
+            name: "/play",
+            type: ActivityType.Listening,
+        })
+    }
 
     endTimestamp = new Date();
     logger.info(`Bot started in ${(endTimestamp.getTime() - startTimestamp.getTime())}ms`);

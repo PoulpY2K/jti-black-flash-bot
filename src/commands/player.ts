@@ -17,10 +17,10 @@ import {
 } from "discordx";
 import {QueueNode, RepeatMode} from "@discordx/music";
 import {bot} from "../main.js";
-import {formatDurationFromMS, Queue} from "./queue.js";
+import {formatDurationFromMS, Queue} from "../music/queue";
 
 @Discord()
-export class music {
+export class player {
     queueNode: QueueNode;
     guildQueue = new Map<string, Queue>();
 
@@ -50,7 +50,7 @@ export class music {
             !(interaction.member instanceof GuildMember)
         ) {
             await interaction.followUp(
-                "> I apologize, but I am currently unable to process your request. Please try again later."
+                "> Je suis désolé, mais je n'arrive pas à traiter votre demande. Veuillez réessayer plus tard."
             );
 
             setTimeout(() => interaction.deleteReply(), 15e3);
@@ -61,7 +61,7 @@ export class music {
 
         if (!member.voice.channel) {
             await interaction.followUp(
-                "> It seems like you are not currently in a voice channel"
+                "> Il semblerait que vous ne soyez pas dans un salon vocal. Veuillez vous connecter."
             );
 
             setTimeout(() => interaction.deleteReply(), 15e3);
@@ -82,7 +82,7 @@ export class music {
             }
         } else if (bot.voice.channelId !== member.voice.channelId) {
             await interaction.followUp(
-                "> I am not in your voice channel, therefore I cannot execute your request"
+                "> Je ne suis pas dans votre salon vocal, je ne peux donc pas traiter votre demande."
             );
 
             setTimeout(() => interaction.deleteReply(), 15e3);
@@ -139,7 +139,7 @@ export class music {
         const video = await YouTube.searchOne(songName).catch(() => null);
         if (!video) {
             await interaction.followUp(
-                `> Could not found song with keyword: \`${songName}\``
+                `> Je ne parviens pas à trouver une piste avec les mots-clés suivants : \`${songName}\``
             );
             return;
         }
@@ -148,7 +148,7 @@ export class music {
             duration: video.duration,
             seek,
             thumbnail: video.thumbnail?.url,
-            title: video.title ?? "NaN",
+            title: video.title ?? "Aucun",
             url: video.url,
             user: member.user,
         });
@@ -157,10 +157,15 @@ export class music {
             queue.playNext();
         }
 
+        if (interaction.channel) {
+            queue.setChannel(interaction.channel);
+            queue.startControlUpdate();
+        }
+
         const embed = new EmbedBuilder();
-        embed.setTitle("Enqueued");
+        embed.setTitle("En file d'attente");
         embed.setDescription(
-            `Enqueued song **${video.title} (${formatDurationFromMS(
+            `Mise en file d'attente de **${video.title} (${formatDurationFromMS(
                 video.duration
             )})**`
         );
@@ -205,7 +210,7 @@ export class music {
         const playlist = search[0];
 
         if (!playlist?.id) {
-            await interaction.followUp("The playlist could not be found");
+            await interaction.followUp("> La playlist est introuvable.");
             return;
         }
 
@@ -215,7 +220,7 @@ export class music {
             duration: video.duration,
             seek,
             thumbnail: video.thumbnail?.url,
-            title: video.title ?? "NaN",
+            title: video.title ?? "Aucun",
             url: video.url,
             user: member.user,
         }));
@@ -227,9 +232,9 @@ export class music {
         }
 
         const embed = new EmbedBuilder();
-        embed.setTitle("Enqueued");
+        embed.setTitle("En file d'attente");
         embed.setDescription(
-            `Enqueued  **${tracks.length}** songs from playlist **${playlist.title}**`
+            `Mise en file d'attente de **${tracks.length}** pistes depuis la playlist **${playlist.title}**`
         );
 
         if (playlist.thumbnail?.url) {
@@ -261,7 +266,7 @@ export class music {
 
         if (!currentTrack) {
             await interaction.followUp(
-                "> There doesn't seem to be anything to seek at the moment."
+                "> Il semblerait qu'il n'y ait aucune piste à traiter pour le moment."
             );
             return;
         }
@@ -270,7 +275,7 @@ export class music {
 
         if (time >= currentTrack.duration) {
             await interaction.followUp(
-                `> Time should not be greater then ${formatDurationFromMS(
+                `> La durée ne devrait pas être plus grande que ${formatDurationFromMS(
                     currentTrack.duration
                 )}`
             );
@@ -282,9 +287,9 @@ export class music {
         queue.skip();
 
         const embed = new EmbedBuilder();
-        embed.setTitle("Seeked");
+        embed.setTitle("Trouvé");
         embed.setDescription(
-            `Playing **${currentTrack.title}**** from **${formatDurationFromMS(
+            `Lecture de **${currentTrack.title}**** à **${formatDurationFromMS(
                 time
             )}/${formatDurationFromMS(currentTrack.duration)}**`
         );
@@ -315,12 +320,12 @@ export class music {
         const currentTrack = queue.currentTrack;
 
         if (!currentTrack || !queue.isPlaying) {
-            await interaction.followUp("> I am already quiet, amigo!");
+            await interaction.followUp("> Je suis déjà silencieux !");
             return;
         }
 
         queue.pause();
-        await interaction.followUp(`> paused ${currentTrack.title}`);
+        await interaction.followUp(`> Mise en pause de ${currentTrack.title}`);
     }
 
     @Slash({description: "Reprendre la piste en cours"})
@@ -335,12 +340,12 @@ export class music {
         const currentTrack = queue.currentTrack;
 
         if (!currentTrack || queue.isPlaying) {
-            await interaction.followUp("> no no no, I am already doing my best, amigo!");
+            await interaction.followUp("> Je fais déjà de mon mieux !");
             return;
         }
 
         queue.unpause();
-        await interaction.followUp(`> resuming ${currentTrack.title}`);
+        await interaction.followUp(`> Reprise de ${currentTrack.title}`);
     }
 
     @Slash({description: "Passer la piste en cours de lecture"})
@@ -356,13 +361,13 @@ export class music {
 
         if (!currentTrack) {
             await interaction.followUp(
-                "> There doesn't seem to be anything to skip at the moment."
+                "> Il semblerait qu'il n'y ait aucune piste en cours de lecture."
             );
             return;
         }
 
         queue.skip();
-        await interaction.followUp(`> skipped ${currentTrack.title}`);
+        await interaction.followUp(`> ${currentTrack.title} a bien été passé`);
     }
 
     @Slash({description: "Régler le volume", name: "set-volume"})
@@ -386,7 +391,7 @@ export class music {
         const {queue} = rq;
 
         queue.setVolume(volume);
-        await interaction.followUp(`> volume set to ${volume}`);
+        await interaction.followUp(`> Volume réglé à ${volume}`);
     }
 
     @Slash({description: "Arrêter le bot"})
@@ -401,7 +406,7 @@ export class music {
         queue.exit();
         this.guildQueue.delete(guild.id);
 
-        await interaction.followUp("> adios amigo, see you later!");
+        await interaction.followUp("> À plus tard !");
     }
 
     @Slash({description: "Mélanger la file d'attente"})
@@ -413,7 +418,7 @@ export class music {
 
         const {queue} = rq;
         queue.mix();
-        await interaction.followUp("> playlist shuffled!");
+        await interaction.followUp("> Playlist mélangée !");
     }
 
     @Slash({description: "Afficher les commandes graphiques", name: "gui-show"})
@@ -428,7 +433,7 @@ export class music {
         queue.setChannel(interaction.channel);
         queue.startControlUpdate();
 
-        await interaction.followUp("> Enable GUI mode!");
+        await interaction.followUp("> Activation du mode graphique !");
     }
 
     @Slash({description: "Cacher les commandes graphiques", name: "gui-hide"})
@@ -440,7 +445,7 @@ export class music {
 
         const {queue} = rq;
         await queue.stopControlUpdate();
-        await interaction.followUp("> Disabled GUI mode!");
+        await interaction.followUp("> Désactivation du mode graphique !");
     }
 
     @ButtonComponent({id: "btn-next"})
