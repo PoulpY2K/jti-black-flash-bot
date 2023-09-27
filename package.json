@@ -10,19 +10,17 @@
     "build:changelog": "npx @discordx/changelog",
     "dev": "tsx src/main.ts",
     "start": "node build/main.js",
-    "start:migrate": "prisma migrate deploy && npm run start",
     "watch": "nodemon --exec tsx src/main.ts"
   },
   "dependencies": {
     "@discordx/importer": "^1.2.2",
     "@discordx/music": "^6.0.2",
     "@discordx/pagination": "^3.4.1",
-    "@prisma/client": "^4.16.1",
     "discord.js": "^14.11.0",
     "discordx": "^11.7.6",
-    "prisma": "^4.16.1",
     "tslog": "^4.8.2",
-    "youtube-sr": "^4.3.4"
+    "youtube-sr": "^4.3.4",
+    "sodium": "^3.0.2"
   },
   "devDependencies": {
     "@types/node": "^20.3.2",
@@ -32,7 +30,7 @@
     "nodemon": "^2.0.22",
     "prettier": "^2.8.8",
     "tsx": "^3.12.7",
-    "typescript": "5.1.5",
+    "typescript": "^5.2.2",
     "yt-search": "^2.10.4"
   },
   "engines": {

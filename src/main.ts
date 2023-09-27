@@ -8,13 +8,11 @@ import {
     ActivityType
 } from "discord.js";
 import {Client} from "discordx";
-import {PrismaClient} from '@prisma/client'
 import {Logger} from "tslog";
 
 const logger = new Logger({name: "main"});
 let startTimestamp: Date;
 let endTimestamp: Date;
-export const prisma = new PrismaClient()
 
 export const bot = new Client({
     // To use only guild command

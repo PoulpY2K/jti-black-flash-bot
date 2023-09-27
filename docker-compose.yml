@@ -1,30 +1,9 @@
 version: "3"
 services:
-  db:
-    image: postgres:${POSTGRES_VERSION:-latest}
-    restart: always
-    volumes:
-      - jti-bot-db:/var/lib/postgres/data:rw
-    expose:
-      - "${POSTGRES_PORT:-5432}"
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      retries: 5
-      timeout: 5s
-      interval: 10s
-    env_file:
-      - .env
   jti-bot:
     build:
       context: .
       dockerfile: Dockerfile
     restart: always
-    depends_on:
-      - db
     env_file:
       - .env
-
-volumes:
-  jti-bot-db:

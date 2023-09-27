@@ -157,11 +157,6 @@ export class player {
             queue.playNext();
         }
 
-        if (interaction.channel) {
-            queue.setChannel(interaction.channel);
-            queue.startControlUpdate();
-        }
-
         const embed = new EmbedBuilder();
         embed.setTitle("En file d'attente");
         embed.setDescription(
