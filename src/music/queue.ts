@@ -39,7 +39,7 @@ export function formatDurationFromMS(duration: number): string {
 
 export class Queue extends TrackQueue<MyTrack> {
     private _channel: TextBasedChannel | null = null;
-    private _controlTimer: NodeJS.Timer | null = null;
+    private _controlTimer: ReturnType<typeof setTimeout> | null = null;
 
     private lastControlMessage?: Message;
     private lockUpdate = false;
