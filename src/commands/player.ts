@@ -1,23 +1,11 @@
-import {AudioPlayerStatus} from "@discordjs/voice";
 import type {CommandInteraction, Guild} from "discord.js";
-import {
-    ApplicationCommandOptionType,
-    EmbedBuilder,
-    GuildMember,
-} from "discord.js";
+import {ApplicationCommandOptionType, EmbedBuilder, GuildMember,} from "discord.js";
 import YouTube from "youtube-sr";
 
-import {
-    ArgsOf,
-    ButtonComponent,
-    Discord,
-    On,
-    Slash,
-    SlashOption,
-} from "discordx";
+import {ArgsOf, Discord, On, Slash, SlashOption,} from "discordx";
 import {QueueNode, RepeatMode} from "@discordx/music";
 import {bot} from "../main.js";
-import {formatDurationFromMS, Queue} from "../music/queue.js";
+import {formatDurationFromMS, Queue} from "../music/queue";
 
 @Discord()
 export class player {
@@ -72,7 +60,6 @@ export class player {
 
         const bot = guild.members.cache.get(interaction.client.user.id);
         if (!bot?.voice.channelId) {
-            queue.setChannel(interaction.channel);
             queue.join({
                 channelId: member.voice.channel.id,
                 guildId: guild.id,
@@ -416,134 +403,39 @@ export class player {
         await interaction.followUp("> Playlist mélangée !");
     }
 
-    @Slash({description: "Afficher les commandes graphiques", name: "gui-show"})
-    async guiShow(interaction: CommandInteraction): Promise<void> {
+    @Slash({description: "Boucler la piste en cours"})
+    async loop(interaction: CommandInteraction): Promise<void> {
         const rq = await this.processJoin(interaction);
-        if (!rq || !interaction.channel) {
+        if (!rq) {
             return;
         }
 
         const {queue} = rq;
 
-        queue.setChannel(interaction.channel);
-        queue.startControlUpdate();
-
-        await interaction.followUp("> Activation du mode graphique !");
+        if (queue.repeatMode === RepeatMode.One) {
+            queue.setRepeatMode(RepeatMode.None);
+            await interaction.followUp("> Annulation de la lecture de la piste en boucle !");
+        } else {
+            queue.setRepeatMode(RepeatMode.One)
+            await interaction.followUp("> Lecture de la piste en boucle !");
+        }
     }
 
-    @Slash({description: "Cacher les commandes graphiques", name: "gui-hide"})
-    async guiHide(interaction: CommandInteraction): Promise<void> {
+    @Slash({name:"loop-all", description: "Boucler la file d'attente"})
+    async loopQueue(interaction: CommandInteraction): Promise<void> {
         const rq = await this.processJoin(interaction);
-        if (!rq || !interaction.channel) {
+        if (!rq) {
             return;
         }
 
         const {queue} = rq;
-        await queue.stopControlUpdate();
-        await interaction.followUp("> Désactivation du mode graphique !");
-    }
 
-    @ButtonComponent({id: "btn-next"})
-    async nextControl(interaction: CommandInteraction): Promise<void> {
-        if (!interaction.guildId) {
-            return;
+        if (queue.repeatMode === RepeatMode.All) {
+            queue.setRepeatMode(RepeatMode.None);
+            await interaction.followUp("> Annulation de la lecture de la file d'attente en boucle !");
+        } else {
+            queue.setRepeatMode(RepeatMode.All)
+            await interaction.followUp("> Lecture de la file d'attente en boucle !");
         }
-
-        const queue = this.getQueue(interaction.guildId);
-        queue.skip();
-
-        await interaction.deferReply();
-        await interaction.deleteReply();
-    }
-
-    @ButtonComponent({id: "btn-pause"})
-    async pauseControl(interaction: CommandInteraction): Promise<void> {
-        if (!interaction.guildId) {
-            return;
-        }
-
-        const queue = this.getQueue(interaction.guildId);
-        queue.playerState === AudioPlayerStatus.Paused
-            ? queue.unpause()
-            : queue.pause();
-
-        await interaction.deferReply();
-        await interaction.deleteReply();
-    }
-
-    @ButtonComponent({id: "btn-leave"})
-    async leaveControl(interaction: CommandInteraction): Promise<void> {
-        if (!interaction.guildId) {
-            return;
-        }
-
-        const queue = this.getQueue(interaction.guildId);
-        queue.exit();
-        this.guildQueue.delete(interaction.guildId);
-
-        await interaction.deferReply();
-        await interaction.deleteReply();
-    }
-
-    @ButtonComponent({id: "btn-repeat"})
-    async repeatControl(interaction: CommandInteraction): Promise<void> {
-        if (!interaction.guildId) {
-            return;
-        }
-
-        const queue = this.getQueue(interaction.guildId);
-        queue.setRepeatMode(RepeatMode.All);
-
-        await interaction.deferReply();
-        await interaction.deleteReply();
-    }
-
-    @ButtonComponent({id: "btn-queue"})
-    queueControl(interaction: CommandInteraction): void {
-        if (!interaction.guildId) {
-            return;
-        }
-
-        const queue = this.getQueue(interaction.guildId);
-        queue.view(interaction).then();
-    }
-
-    @ButtonComponent({id: "btn-mix"})
-    async mixControl(interaction: CommandInteraction): Promise<void> {
-        if (!interaction.guildId) {
-            return;
-        }
-
-        const queue = this.getQueue(interaction.guildId);
-        queue.mix();
-
-        await interaction.deferReply();
-        await interaction.deleteReply();
-    }
-
-    @ButtonComponent({id: "btn-controls"})
-    async controlsControl(interaction: CommandInteraction): Promise<void> {
-        if (!interaction.guildId) {
-            return;
-        }
-
-        const queue = this.getQueue(interaction.guildId);
-        await queue.updateControlMessage({force: true});
-
-        await interaction.deferReply();
-        await interaction.deleteReply();
-    }
-
-    @ButtonComponent({id: "btn-loop"})
-    async loopControl(interaction: CommandInteraction): Promise<void> {
-        if (!interaction.guildId) {
-            return;
-        }
-
-        const queue = this.getQueue(interaction.guildId);
-        queue.setRepeatMode(RepeatMode.One);
-
-        await interaction.deferReply();
-        await interaction.deleteReply();
     }
 }
