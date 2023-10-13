@@ -13,28 +13,28 @@
     "watch": "nodemon --exec tsx src/main.ts"
   },
   "dependencies": {
-    "@discordx/importer": "^1.2.2",
+    "@discordx/importer": "^1.2.3",
     "@discordx/music": "^6.0.2",
     "@discordx/pagination": "^3.4.1",
-    "discord.js": "^14.11.0",
+    "discord.js": "^14.13.0",
     "discordx": "^11.7.6",
-    "sodium": "^3.0.2",
-    "tslog": "^4.8.2",
+    "sodium-native": "^4.0.4",
+    "tslog": "^4.9.2",
     "youtube-sr": "^4.3.4"
   },
   "devDependencies": {
-    "@types/node": "^20.3.2",
-    "@types/yt-search": "^2.3.2",
-    "ffmpeg-static": "^5.1.0",
-    "libsodium-wrappers": "^0.7.11",
+    "@types/node": "^20.8.5",
+    "@types/yt-search": "^2.10.1",
+    "ffmpeg-static": "^5.2.0",
+    "libsodium-wrappers": "^0.7.13",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
-    "tsx": "^3.12.7",
+    "tsx": "^3.13.0",
     "typescript": "^5.2.2",
     "yt-search": "^2.10.4"
   },
   "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=7.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }
