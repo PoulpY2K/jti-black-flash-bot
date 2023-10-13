@@ -5,7 +5,7 @@ import YouTube from "youtube-sr";
 import {ArgsOf, Discord, On, Slash, SlashOption,} from "discordx";
 import {QueueNode, RepeatMode} from "@discordx/music";
 import {bot} from "../main.js";
-import {formatDurationFromMS, Queue} from "../music/queue";
+import {formatDurationFromMS, Queue} from "../music/queue.js";
 
 @Discord()
 export class player {
