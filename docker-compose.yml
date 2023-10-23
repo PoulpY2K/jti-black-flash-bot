@@ -4,6 +4,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: "jti-bot"
     restart: always
     env_file:
       - .env
+
+networks:
+  default:
+    name: jti-network
